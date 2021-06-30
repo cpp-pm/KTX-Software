@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dfdutils/dfd.h"
+#include <KhronosGroup/dfd.h>
 #include "ktx.h"
 #include "ktxint.h"
 #include "filestream.h"

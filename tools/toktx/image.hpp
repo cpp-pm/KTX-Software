@@ -19,12 +19,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-#include <KHR/khr_df.h>
+#include <KhronosGroup/khr_df.h>
 
 #include "argparser.h"
 #include "unused.h"
-#include "encoder/basisu_resampler.h"
-#include "encoder/basisu_resampler_filters.h"
+#include <basis_universal/basisu_resampler.h>
+#include <basis_universal/basisu_resampler_filters.h>
 
 typedef float (*OETFFunc)(float const, float const);
 

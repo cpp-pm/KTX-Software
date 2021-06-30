@@ -21,9 +21,9 @@
 #include <stdexcept>
 
 #include "image.hpp"
-#include "encoder/lodepng.h"
-#include <KHR/khr_df.h>
-#include "dfd.h"
+#include <lodepng/lodepng.h>
+#include <KhronosGroup/khr_df.h>
+#include <KhronosGroup/dfd.h>
 
 void warning(const char *pFmt, ...);
 

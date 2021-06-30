@@ -3,6 +3,14 @@
 
 cmake_minimum_required(VERSION 3.15)
 
+if(HUNTER_ENABLED)
+    include(cmake/HunterGate.cmake)
+    HunterGate(
+        URL "https://github.com/cpp-pm/hunter/archive/v0.23.306.tar.gz"
+        SHA1 "3965a1463594034b0a215fc534e9c4ffd1250f3a"
+    )
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules/")
 
 find_package(Bash REQUIRED)
@@ -37,9 +45,9 @@ option( KTX_FEATURE_STATIC_LIBRARY "Create static libraries (shared otherwise)" 
 option( KTX_FEATURE_TESTS "Create unit tests" ON )
 
 set_target_processor_type(CPU_ARCHITECTURE)
-if(CPU_ARCHITECTURE STREQUAL x86_64 OR CPU_ARCHITECTURE STREQUAL x86)
-    option( BASISU_SUPPORT_SSE "Compile with SSE support so applications can choose to use it" ON )
-endif()
+#if(CPU_ARCHITECTURE STREQUAL x86_64 OR CPU_ARCHITECTURE STREQUAL x86)
+#    option( BASISU_SUPPORT_SSE "Compile with SSE support so applications can choose to use it" ON )
+#endif()
 
 CMAKE_DEPENDENT_OPTION(KTX_EMBED_BITCODE "Embed bitcode in binaries" OFF "APPLE AND IOS" OFF)
 
@@ -102,7 +110,19 @@ else()
 endif()
 
 # Depends on the settings, so it must be included after
-include(cmake/mkvk.cmake)
+#include(cmake/mkvk.cmake)
+
+if(HUNTER_ENABLED)
+    hunter_add_package(basis_universal)
+    find_package(basis_universal CONFIG REQUIRED)
+    if(KTX_FEATURE_VULKAN)
+        hunter_add_package(dfdutils)
+        find_package(dfdutils CONFIG REQUIRED)
+    endif()
+    if(KTX_FEATURE_GL_UPLOAD)
+        find_package(OpenGL REQUIRED)
+    endif()
+endif()
 
 # Global compile & link options including optimization flags
 if(MSVC)
@@ -127,28 +147,28 @@ set(KTX_MAIN_SRC
     include/ktx.h
     lib/basis_sgd.h
     lib/basis_transcode.cpp
-    lib/basisu/transcoder/basisu_containers.h
-    lib/basisu/transcoder/basisu_containers_impl.h
-    lib/basisu/transcoder/basisu_file_headers.h
-    lib/basisu/transcoder/basisu_global_selector_cb.h
-    lib/basisu/transcoder/basisu_global_selector_palette.h
-    lib/basisu/transcoder/basisu_transcoder_internal.h
-    lib/basisu/transcoder/basisu_transcoder_uastc.h
-    lib/basisu/transcoder/basisu_transcoder.cpp
-    lib/basisu/transcoder/basisu_transcoder.h
-    lib/basisu/transcoder/basisu.h
-    lib/basisu/zstd/zstd.c
+    # lib/basisu/transcoder/basisu_containers.h
+    # lib/basisu/transcoder/basisu_containers_impl.h
+    # lib/basisu/transcoder/basisu_file_headers.h
+    # lib/basisu/transcoder/basisu_global_selector_cb.h
+    # lib/basisu/transcoder/basisu_global_selector_palette.h
+    # lib/basisu/transcoder/basisu_transcoder_internal.h
+    # lib/basisu/transcoder/basisu_transcoder_uastc.h
+    # lib/basisu/transcoder/basisu_transcoder.cpp
+    # lib/basisu/transcoder/basisu_transcoder.h
+    # lib/basisu/transcoder/basisu.h
+    # lib/basisu/zstd/zstd.c
     lib/checkheader.c
-    lib/dfdutils/createdfd.c
-    lib/dfdutils/colourspaces.c
-    lib/dfdutils/dfd.h
-    lib/dfdutils/dfd2vk.inl
-    lib/dfdutils/interpretdfd.c
-    lib/dfdutils/printdfd.c
-    lib/dfdutils/queries.c
-    lib/dfdutils/vk2dfd.c
-    lib/dfdutils/vulkan/vk_platform.h
-    lib/dfdutils/vulkan/vulkan_core.h
+    # lib/dfdutils/createdfd.c
+    # lib/dfdutils/colourspaces.c
+    # lib/dfdutils/dfd.h
+    # lib/dfdutils/dfd2vk.inl
+    # lib/dfdutils/interpretdfd.c
+    # lib/dfdutils/printdfd.c
+    # lib/dfdutils/queries.c
+    # lib/dfdutils/vk2dfd.c
+    # lib/dfdutils/vulkan/vk_platform.h
+    # lib/dfdutils/vulkan/vulkan_core.h
     lib/etcdec.cxx
     lib/etcunpack.cxx
     lib/filestream.c
@@ -167,10 +187,10 @@ set(KTX_MAIN_SRC
     lib/texture2.c
     lib/texture2.h
     lib/uthash.h
-    lib/vk_format.h
-    lib/vkformat_check.c
-    lib/vkformat_enum.h
-    lib/vkformat_str.c
+    # lib/vk_format.h
+    # lib/vkformat_check.c
+    # lib/vkformat_enum.h
+    # lib/vkformat_str.c
     )
 
 if(KTX_FEATURE_GL_UPLOAD)
@@ -193,10 +213,10 @@ add_library( ktx_read ${LIB_TYPE}
 
 macro(commom_lib_settings lib write)
 
-    if(TARGET mkvk)
-        # Creating vulkan headers is only required when Vulkan SDK updates.
-        add_dependencies(${lib} mkvk)
-    endif()
+    # if(TARGET mkvk)
+    #     # Creating vulkan headers is only required when Vulkan SDK updates.
+    #     add_dependencies(${lib} mkvk)
+    # endif()
 
     set_target_properties(${lib} PROPERTIES
         PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/ktx.h
@@ -241,27 +261,32 @@ macro(commom_lib_settings lib write)
         ${lib}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/transcoder>
-        $<INSTALL_INTERFACE:lib/basisu/transcoder>
+        $<INSTALL_INTERFACE:include/${lib}>
+    # PRIVATE
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/transcoder>
+        # $<INSTALL_INTERFACE:lib/basisu/transcoder>
 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/zstd>
-        $<INSTALL_INTERFACE:lib/basisu/zstd>
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/zstd>
+        # $<INSTALL_INTERFACE:lib/basisu/zstd>
 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/other_include>
-        $<INSTALL_INTERFACE:other_include>
+        # $<INSTALL_INTERFACE:other_include>
 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utils>
-        $<INSTALL_INTERFACE:utils>
+        # $<INSTALL_INTERFACE:utils>
     )
+
+    if(HUNTER_ENABLED)
+        target_link_libraries(${lib}
+            basis_universal::basisu_transcoder)
+    endif()
 
     if( LIB_TYPE STREQUAL STATIC )
         target_compile_definitions(${lib} PUBLIC KHRONOS_STATIC)
     endif()
 
     # To reduce size, don't support transcoding to ancient formats.
-    target_compile_definitions(${lib} PRIVATE BASISD_SUPPORT_FXT1=0)
+    #target_compile_definitions(${lib} PRIVATE BASISD_SUPPORT_FXT1=0)
 
     # TODO: make options for all formats and good per-platform defaults
     # - BASISD_SUPPORT_UASTC
@@ -281,7 +306,7 @@ macro(commom_lib_settings lib write)
     if(WIN32)
         target_compile_definitions(
             ${lib}
-        PRIVATE 
+        PRIVATE
             "KTX_API=__declspec(dllexport)"
         PUBLIC # only for basisu_c_binding.
             BASISU_NO_ITERATOR_DEBUG_LEVEL
@@ -296,12 +321,12 @@ macro(commom_lib_settings lib write)
         )
     elseif(EMSCRIPTEN)
         target_compile_definitions(${lib} PRIVATE
-            # To reduce size, don't support transcoding to formats not
-            # supported # by WebGL.
-            BASISD_SUPPORT_ATC=0
-            BASISD_SUPPORT_PVRTC2=0
-            # Don't support higher quality mode to avoid 64k table.
-            BASISD_SUPPORT_ASTC_HIGHER_OPAQUE_QUALITY=0
+            # # To reduce size, don't support transcoding to formats not
+            # # supported # by WebGL.
+            # BASISD_SUPPORT_ATC=0
+            # BASISD_SUPPORT_PVRTC2=0
+            # # Don't support higher quality mode to avoid 64k table.
+            # BASISD_SUPPORT_ASTC_HIGHER_OPAQUE_QUALITY=0
             KTX_OMIT_VULKAN=1
         )
     endif()
@@ -355,12 +380,18 @@ macro(commom_lib_settings lib write)
             lib/vk_funcs.h
             lib/vkloader.c
         )
-        target_include_directories(
-            ${lib}
-        PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/dfdutils>
-            $<INSTALL_INTERFACE:lib/dfdutils>
+        # target_include_directories(
+        #     ${lib}
+        # PRIVATE
+        #     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/dfdutils>
+        #     $<INSTALL_INTERFACE:lib/dfdutils>
+        # )
+        target_link_libraries(${lib}
+            KhronosGroup::dfdutils
+            $<${write}:basis_universal::basisu_encoder>
         )
+
+
 
         get_target_property( KTX_PUBLIC_HEADER ${lib} PUBLIC_HEADER )
         list(APPEND KTX_PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/ktxvulkan.h)
@@ -381,73 +412,73 @@ commom_lib_settings(ktx_read 0)
 create_version_header(lib ktx)
 create_version_file()
 
-target_compile_definitions(
-    ktx_read
-PRIVATE
-    # We're reading the files ourselves so don't need Basis KTX v2 support.
-    BASISD_SUPPORT_KTX2_ZSTD=0
-    BASISD_SUPPORT_KTX2=0
-)
+# target_compile_definitions(
+#     ktx_read
+# PRIVATE
+#     # We're reading the files ourselves so don't need Basis KTX v2 support.
+#     BASISD_SUPPORT_KTX2_ZSTD=0
+#     BASISD_SUPPORT_KTX2=0
+# )
 
 # Adding write capability to target ktx
 
-set(BASISU_ENCODER_C_SRC
-    lib/basisu/encoder/apg_bmp.c
-    lib/basisu/encoder/apg_bmp.h
-    )
+# set(BASISU_ENCODER_C_SRC
+#     lib/basisu/encoder/apg_bmp.c
+#     lib/basisu/encoder/apg_bmp.h
+#     )
 
-set(BASISU_ENCODER_CXX_SRC
-    lib/basisu/encoder/basisu_astc_decomp.cpp
-    lib/basisu/encoder/basisu_astc_decomp.h
-    lib/basisu/encoder/basisu_backend.cpp
-    lib/basisu/encoder/basisu_backend.h
-    lib/basisu/encoder/basisu_basis_file.cpp
-    lib/basisu/encoder/basisu_basis_file.h
-    lib/basisu/encoder/basisu_bc7enc.cpp
-    lib/basisu/encoder/basisu_bc7enc.h
-    lib/basisu/encoder/basisu_comp.cpp
-    lib/basisu/encoder/basisu_comp.h
-    lib/basisu/encoder/basisu_enc.cpp
-    lib/basisu/encoder/basisu_enc.h
-    lib/basisu/encoder/basisu_etc.cpp
-    lib/basisu/encoder/basisu_etc.h
-    lib/basisu/encoder/basisu_frontend.cpp
-    lib/basisu/encoder/basisu_frontend.h
-    lib/basisu/encoder/basisu_global_selector_palette_helpers.cpp
-    lib/basisu/encoder/basisu_global_selector_palette_helpers.h
-    lib/basisu/encoder/basisu_gpu_texture.cpp
-    lib/basisu/encoder/basisu_gpu_texture.h
-    lib/basisu/encoder/basisu_kernels_declares.h
-    lib/basisu/encoder/basisu_kernels_imp.h
-    lib/basisu/encoder/basisu_kernels_sse.cpp
-    lib/basisu/encoder/basisu_miniz.h
-    lib/basisu/encoder/basisu_pvrtc1_4.cpp
-    lib/basisu/encoder/basisu_pvrtc1_4.h
-    lib/basisu/encoder/basisu_resample_filters.cpp
-    lib/basisu/encoder/basisu_resampler_filters.h
-    lib/basisu/encoder/basisu_resampler.cpp
-    lib/basisu/encoder/basisu_resampler.h
-    lib/basisu/encoder/basisu_ssim.cpp
-    lib/basisu/encoder/basisu_ssim.h
-    lib/basisu/encoder/basisu_uastc_enc.cpp
-    lib/basisu/encoder/basisu_uastc_enc.h
-    lib/basisu/encoder/cppspmd_flow.h
-    lib/basisu/encoder/cppspmd_math.h
-    lib/basisu/encoder/cppspmd_math_declares.h
-    lib/basisu/encoder/cppspmd_sse.h
-    lib/basisu/encoder/cppspmd_type_aliases.h
-    lib/basisu/encoder/jpgd.cpp
-    lib/basisu/encoder/jpgd.h
-    lib/basisu/encoder/lodepng.cpp
-    lib/basisu/encoder/lodepng.h
-    )
+# set(BASISU_ENCODER_CXX_SRC
+#     lib/basisu/encoder/basisu_astc_decomp.cpp
+#     lib/basisu/encoder/basisu_astc_decomp.h
+#     lib/basisu/encoder/basisu_backend.cpp
+#     lib/basisu/encoder/basisu_backend.h
+#     lib/basisu/encoder/basisu_basis_file.cpp
+#     lib/basisu/encoder/basisu_basis_file.h
+#     lib/basisu/encoder/basisu_bc7enc.cpp
+#     lib/basisu/encoder/basisu_bc7enc.h
+#     lib/basisu/encoder/basisu_comp.cpp
+#     lib/basisu/encoder/basisu_comp.h
+#     lib/basisu/encoder/basisu_enc.cpp
+#     lib/basisu/encoder/basisu_enc.h
+#     lib/basisu/encoder/basisu_etc.cpp
+#     lib/basisu/encoder/basisu_etc.h
+#     lib/basisu/encoder/basisu_frontend.cpp
+#     lib/basisu/encoder/basisu_frontend.h
+#     lib/basisu/encoder/basisu_global_selector_palette_helpers.cpp
+#     lib/basisu/encoder/basisu_global_selector_palette_helpers.h
+#     lib/basisu/encoder/basisu_gpu_texture.cpp
+#     lib/basisu/encoder/basisu_gpu_texture.h
+#     lib/basisu/encoder/basisu_kernels_declares.h
+#     lib/basisu/encoder/basisu_kernels_imp.h
+#     lib/basisu/encoder/basisu_kernels_sse.cpp
+#     lib/basisu/encoder/basisu_miniz.h
+#     lib/basisu/encoder/basisu_pvrtc1_4.cpp
+#     lib/basisu/encoder/basisu_pvrtc1_4.h
+#     lib/basisu/encoder/basisu_resample_filters.cpp
+#     lib/basisu/encoder/basisu_resampler_filters.h
+#     lib/basisu/encoder/basisu_resampler.cpp
+#     lib/basisu/encoder/basisu_resampler.h
+#     lib/basisu/encoder/basisu_ssim.cpp
+#     lib/basisu/encoder/basisu_ssim.h
+#     lib/basisu/encoder/basisu_uastc_enc.cpp
+#     lib/basisu/encoder/basisu_uastc_enc.h
+#     lib/basisu/encoder/cppspmd_flow.h
+#     lib/basisu/encoder/cppspmd_math.h
+#     lib/basisu/encoder/cppspmd_math_declares.h
+#     lib/basisu/encoder/cppspmd_sse.h
+#     lib/basisu/encoder/cppspmd_type_aliases.h
+#     lib/basisu/encoder/jpgd.cpp
+#     lib/basisu/encoder/jpgd.h
+#     lib/basisu/encoder/lodepng.cpp
+#     lib/basisu/encoder/lodepng.h
+#     )
 
 target_sources(
     ktx
 PRIVATE
     lib/basis_encode.cpp
-    ${BASISU_ENCODER_C_SRC}
-    ${BASISU_ENCODER_CXX_SRC}
+    # ${BASISU_ENCODER_C_SRC}
+    # ${BASISU_ENCODER_CXX_SRC}
     lib/writer1.c
     lib/writer2.c
 )
@@ -455,79 +486,79 @@ PRIVATE
 # Turn off these warnings until Rich fixes the occurences.
 # It it not clear to me if generator expressions can be used here
 # hence the long-winded way.
-if(MSVC)
-    set_source_files_properties(
-        lib/basisu/transcoder/basisu_transcoder.cpp
-        lib/basisu/encoder/basisu_enc.cpp
-        PROPERTIES COMPILE_OPTIONS "/wd4100;/wd4189"
-        )
-    set_source_files_properties(
-        lib/basisu/encoder/basisu_kernels_sse.cpp
-        lib/basisu/encoder/basisu_comp.cpp
-        PROPERTIES COMPILE_OPTIONS "/wd4244"
-        )
-    set_source_files_properties(
-        lib/basisu/encoder/basisu_uastc_enc.cpp
-        PROPERTIES COMPILE_OPTIONS "/wd4800"
-        )
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    set_source_files_properties(
-        # It's too much work to discriminate which files need which warnings
-        # disabled.
-        ${BASISU_ENCODER_CXX_SRC}
-        PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-variable;-Wno-class-memaccess;-Wno-misleading-indentation;-Wno-extra;-Wno-deprecated-copy;-Wno-parentheses;-Wno-strict-aliasing"
-        )
-    set_source_files_properties(
-        lib/basisu/transcoder/basisu_transcoder.cpp
-        PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-function;-Wno-unused-variable;-Wno-class-memaccess;-Wno-maybe-uninitialized"
-        )
-elseif(EMSCRIPTEN)
-    set_source_files_properties(
-        ${BASISU_ENCODER_CXX_SRC}
-        PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-variable;-Wno-unused-parameter"
-        )
-    set_source_files_properties(
-        lib/basisu/transcoder/basisu_transcoder.cpp
-        PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-function;-Wno-unused-variable;"
-        )
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    set_source_files_properties(
-        lib/basisu/transcoder/basisu_transcoder.cpp
-        lib/basisu/encoder/basisu_enc.cpp
-        PROPERTIES COMPILE_OPTIONS "-Wno-unused-variable;-Wno-sign-compare;-Wno-shorten-64-to-32"
-        )
-    if (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER_EQUAL "12.0.0")
-        set_source_files_properties( lib/basisu/encoder/basisu_kernels_sse.cpp
-            PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter;-Wno-deprecated-copy;-Wno-uninitialized-const-reference"
-            )
-    else()
-        set_source_files_properties( lib/basisu/encoder/basisu_kernels_sse.cpp
-            PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter"
-            )
-    endif()
-else()
-    message(ERROR "${CMAKE_CXX_COMPILER_ID} not yet supported.")
-endif()
+# if(MSVC)
+#     set_source_files_properties(
+#         lib/basisu/transcoder/basisu_transcoder.cpp
+#         lib/basisu/encoder/basisu_enc.cpp
+#         PROPERTIES COMPILE_OPTIONS "/wd4100;/wd4189"
+#         )
+#     set_source_files_properties(
+#         lib/basisu/encoder/basisu_kernels_sse.cpp
+#         lib/basisu/encoder/basisu_comp.cpp
+#         PROPERTIES COMPILE_OPTIONS "/wd4244"
+#         )
+#     set_source_files_properties(
+#         lib/basisu/encoder/basisu_uastc_enc.cpp
+#         PROPERTIES COMPILE_OPTIONS "/wd4800"
+#         )
+# elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+#     set_source_files_properties(
+#         # It's too much work to discriminate which files need which warnings
+#         # disabled.
+#         ${BASISU_ENCODER_CXX_SRC}
+#         PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-variable;-Wno-class-memaccess;-Wno-misleading-indentation;-Wno-extra;-Wno-deprecated-copy;-Wno-parentheses;-Wno-strict-aliasing"
+#         )
+#     set_source_files_properties(
+#         lib/basisu/transcoder/basisu_transcoder.cpp
+#         PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-function;-Wno-unused-variable;-Wno-class-memaccess;-Wno-maybe-uninitialized"
+#         )
+# elseif(EMSCRIPTEN)
+#     set_source_files_properties(
+#         ${BASISU_ENCODER_CXX_SRC}
+#         PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-variable;-Wno-unused-parameter"
+#         )
+#     set_source_files_properties(
+#         lib/basisu/transcoder/basisu_transcoder.cpp
+#         PROPERTIES COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-function;-Wno-unused-variable;"
+#         )
+# elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+#     set_source_files_properties(
+#         lib/basisu/transcoder/basisu_transcoder.cpp
+#         lib/basisu/encoder/basisu_enc.cpp
+#         PROPERTIES COMPILE_OPTIONS "-Wno-unused-variable;-Wno-sign-compare;-Wno-shorten-64-to-32"
+#         )
+#     if (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER_EQUAL "12.0.0")
+#         set_source_files_properties( lib/basisu/encoder/basisu_kernels_sse.cpp
+#             PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter;-Wno-deprecated-copy;-Wno-uninitialized-const-reference"
+#             )
+#     else()
+#         set_source_files_properties( lib/basisu/encoder/basisu_kernels_sse.cpp
+#             PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter"
+#             )
+#     endif()
+# else()
+#     message(ERROR "${CMAKE_CXX_COMPILER_ID} not yet supported.")
+# endif()
 
-target_include_directories(
-    ktx
-PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu>
-    $<INSTALL_INTERFACE:lib/basisu>
-)
+# target_include_directories(
+#     ktx
+# PRIVATE
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu>
+#     $<INSTALL_INTERFACE:lib/basisu>
+# )
 target_compile_definitions(
     ktx
 PUBLIC
     KTX_FEATURE_WRITE
-PRIVATE
-    # BASISD_SUPPORT_KTX2 has to be 1 to compile the encoder. We
-    # don't use it. Hopefully it doesn't add too much code. We're using
-    # the zstd encoder in basisu by explicitly including the file in our
-    # source list. We don't need the related code in the encoder.
-    BASISD_SUPPORT_KTX2_ZSTD=0
-    BASISD_SUPPORT_KTX2=1
-    $<$<BOOL:${BASISU_SUPPORT_SSE}>:BASISU_SUPPORT_SSE=1>
-    $<$<NOT:$<BOOL:${BASISU_SUPPORT_SSE}>>:BASISU_SUPPORT_SSE=0>
+# PRIVATE
+#     # BASISD_SUPPORT_KTX2 has to be 1 to compile the encoder. We
+#     # don't use it. Hopefully it doesn't add too much code. We're using
+#     # the zstd encoder in basisu by explicitly including the file in our
+#     # source list. We don't need the related code in the encoder.
+#     BASISD_SUPPORT_KTX2_ZSTD=0
+#     BASISD_SUPPORT_KTX2=1
+#     $<$<BOOL:${BASISU_SUPPORT_SSE}>:BASISU_SUPPORT_SSE=1>
+#     $<$<NOT:$<BOOL:${BASISU_SUPPORT_SSE}>>:BASISU_SUPPORT_SSE=0>
 )
 target_compile_options(
     ktx
@@ -585,7 +616,7 @@ if(EMSCRIPTEN)
     target_include_directories( msc_basis_transcoder_js
         PRIVATE
         lib
-        lib/basisu/transcoder
+        # lib/basisu/transcoder
     )
 
     # Re-use ktx's compile options

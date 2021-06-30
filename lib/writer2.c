@@ -29,7 +29,7 @@
 #endif
 #include <zstd.h>
 #include <zstd_errors.h>
-#include <KHR/khr_df.h>
+#include <KhronosGroup/khr_df.h>
 
 #include "ktx.h"
 #include "ktxint.h"
@@ -37,9 +37,8 @@
 #include "memstream.h"
 #include "texture2.h"
 
-#include "dfdutils/dfd.h"
-#include "vkformat_enum.h"
-#include "vk_format.h"
+#include <KhronosGroup/dfd.h>
+#include <KhronosGroup/vkformat_enum.h>
 
 #include "version.h"
 

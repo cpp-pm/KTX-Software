@@ -20,25 +20,24 @@
 
 #include <inttypes.h>
 #include <zstd.h>
-#include <KHR/khr_df.h>
+#include <KhronosGroup/khr_df.h>
 
 #include "ktx.h"
 #include "ktxint.h"
 #include "texture2.h"
-#include "vkformat_enum.h"
-#include "vk_format.h"
+#include <KhronosGroup/vkformat_enum.h>
 #include "basis_sgd.h"
 #if (EMSCRIPTEN)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #endif
-#include "basisu/encoder/basisu_comp.h"
+#include <basis_universal/basisu_comp.h>
 #if (EMSCRIPTEN)
 #pragma clang diagnostic pop
 #endif
-#include "basisu/transcoder/basisu_file_headers.h"
-#include "basisu/transcoder/basisu_transcoder.h"
-#include "dfdutils/dfd.h"
+#include <basis_universal/transcoder/basisu_file_headers.h>
+#include <basis_universal/transcoder/basisu_transcoder.h>
+#include <KhronosGroup/dfd.h>
 
 using namespace basisu;
 using namespace basist;

@@ -21,7 +21,7 @@
 #include <stdexcept>
 
 #include "image.hpp"
-#include "encoder/jpgd.h"
+#include <jpgd.h>
 
 using namespace jpgd;
 
@@ -82,7 +82,7 @@ Image::CreateFromJPG(FILE* src, bool, bool)
     // Figure out how many components so we can request that number from
     // the decoder.
     {
-        jpeg_decoder jd(&stream, jpeg_decoder::cFlagLinearChromaFiltering);
+        jpeg_decoder jd(&stream, jpeg_decoder::cFlagBoxChromaFiltering);
         jpgd_status errorCode = jd.get_error_code();
 
         if (errorCode != JPGD_SUCCESS) {
@@ -113,7 +113,7 @@ Image::CreateFromJPG(FILE* src, bool, bool)
     }
     uint8_t* imageData = decompress_jpeg_image_from_stream(&stream,
                               &w, &h, &actual_comps, componentCount,
-                              jpeg_decoder::cFlagLinearChromaFiltering);
+                              jpeg_decoder::cFlagBoxChromaFiltering);
 
     if (imageData == NULL) {
          throw std::runtime_error("JPEG decode failed");

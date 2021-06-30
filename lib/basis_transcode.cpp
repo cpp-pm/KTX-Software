@@ -20,18 +20,17 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-#include <KHR/khr_df.h>
+#include <KhronosGroup/khr_df.h>
 
-#include "dfdutils/dfd.h"
+#include <KhronosGroup/dfd.h>
 #include "ktx.h"
 #include "ktxint.h"
 #include "texture2.h"
-#include "vkformat_enum.h"
-#include "vk_format.h"
+#include <KhronosGroup/vkformat_enum.h>
 #include "basis_sgd.h"
-#include "basisu/transcoder/basisu_file_headers.h"
-#include "basisu/transcoder/basisu_transcoder.h"
-#include "basisu/transcoder/basisu_transcoder_internal.h"
+#include <basis_universal/transcoder/basisu_file_headers.h>
+#include <basis_universal/transcoder/basisu_transcoder.h>
+#include <basis_universal/transcoder/basisu_transcoder_internal.h>
 
 #undef DECLARE_PRIVATE
 #undef DECLARE_PROTECTED

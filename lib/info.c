@@ -30,7 +30,7 @@
 
 #include <ktx.h>
 
-#include "dfdutils/dfd.h"
+#include <KhronosGroup/dfd.h>
 #include "filestream.h"
 #include "memstream.h"
 #include "ktxint.h"

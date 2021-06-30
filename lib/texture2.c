@@ -24,16 +24,18 @@
 #include <string.h>
 #include <zstd.h>
 #include <zstd_errors.h>
-#include <KHR/khr_df.h>
+#include <KhronosGroup/khr_df.h>
 
-#include "dfdutils/dfd.h"
+#include <KhronosGroup/dfd.h>
 #include "ktx.h"
 #include "ktxint.h"
 #include "filestream.h"
 #include "memstream.h"
 #include "texture2.h"
 #include "unused.h"
-#include "vk_format.h"
+#include <KhronosGroup/vkformat_enum.h>
+
+#include <cassert>
 
 // FIXME: Test this #define and put it in a header somewhere.
 //#define IS_BIG_ENDIAN (1 == *(unsigned char *)&(const int){0x01000000ul})

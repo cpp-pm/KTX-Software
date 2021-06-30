@@ -36,5 +36,11 @@ PRIVATE
     $<TARGET_PROPERTY:ktx,INTERFACE_COMPILE_DEFINITIONS>
 )
 
+if(HUNTER_ENABLED)
+    hunter_add_package(lodepng)
+    find_package(lodepng CONFIG REQUIRED)
+    target_link_libraries(toktx LodePNG::lodepng)
+endif()
+
 set_tool_properties(toktx)
 set_xcode_code_sign(toktx)
