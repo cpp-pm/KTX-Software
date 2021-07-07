@@ -24,16 +24,16 @@
 #include <string.h>
 #include <zstd.h>
 #include <zstd_errors.h>
-#include <KhronosGroup/khr_df.h>
+#include <KHR/khr_df.h>
 
-#include <KhronosGroup/dfd.h>
+#include <KHR/dfd.h>
 #include "ktx.h"
 #include "ktxint.h"
 #include "filestream.h"
 #include "memstream.h"
 #include "texture2.h"
 #include "unused.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 
 #include <cassert>
 

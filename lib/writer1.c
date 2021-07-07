@@ -34,9 +34,9 @@
 #include "memstream.h"
 #include "texture1.h"
 
-#include <KhronosGroup/dfd.h>
+#include <KHR/dfd.h>
 #include "vk_format.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 #include "version.h"
 
 #if defined(_MSC_VER)

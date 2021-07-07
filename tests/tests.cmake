@@ -5,7 +5,7 @@
 
 include(GoogleTest)
 
-add_subdirectory(gtest)
+# add_subdirectory(gtest)
 find_package(Threads)
 
 enable_testing()
@@ -27,7 +27,7 @@ PRIVATE
 
 target_link_libraries(
     unittests
-    gtest
+    GTest::gmock_main
     ktx
     ${CMAKE_THREAD_LIBS_INIT}
 )
@@ -41,14 +41,14 @@ target_include_directories(
     texturetests
 PRIVATE
     $<TARGET_PROPERTY:ktx,INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/other_include
+    # ${PROJECT_SOURCE_DIR}/other_include
     ${PROJECT_SOURCE_DIR}/lib
     unittests
 )
 
 target_link_libraries(
     texturetests
-    gtest
+    GTest::gmock_main
     ktx
     ${CMAKE_THREAD_LIBS_INIT}
 )

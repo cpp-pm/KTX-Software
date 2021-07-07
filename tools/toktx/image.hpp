@@ -19,7 +19,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-#include <KhronosGroup/khr_df.h>
+#include <KHR/khr_df.h>
 
 #include "argparser.h"
 #include "unused.h"

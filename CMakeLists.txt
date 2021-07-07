@@ -6,8 +6,8 @@ cmake_minimum_required(VERSION 3.15)
 if(HUNTER_ENABLED)
     include(cmake/HunterGate.cmake)
     HunterGate(
-        URL "https://github.com/cpp-pm/hunter/archive/v0.23.306.tar.gz"
-        SHA1 "3965a1463594034b0a215fc534e9c4ffd1250f3a"
+        URL "https://github.com/cpp-pm/hunter/archive/v0.23.310.tar.gz"
+        SHA1 "e0fb2936577b7a4b7aaf821bebbbb98bbf17fdea"
     )
 endif()
 
@@ -115,6 +115,8 @@ endif()
 if(HUNTER_ENABLED)
     hunter_add_package(basis_universal)
     find_package(basis_universal CONFIG REQUIRED)
+    hunter_add_package(OpenGL-Registry)
+    find_package(OpenGL-Registry CONFIG REQUIRED)
     if(KTX_FEATURE_VULKAN)
         hunter_add_package(dfdutils)
         find_package(dfdutils CONFIG REQUIRED)
@@ -122,6 +124,9 @@ if(HUNTER_ENABLED)
     if(KTX_FEATURE_GL_UPLOAD)
         find_package(OpenGL REQUIRED)
     endif()
+
+    hunter_add_package(GTest)
+    find_package(GTest CONFIG REQUIRED)
 endif()
 
 # Global compile & link options including optimization flags
@@ -269,7 +274,7 @@ macro(commom_lib_settings lib write)
         # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/zstd>
         # $<INSTALL_INTERFACE:lib/basisu/zstd>
 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/other_include>
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/other_include>
         # $<INSTALL_INTERFACE:other_include>
 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utils>
@@ -278,7 +283,8 @@ macro(commom_lib_settings lib write)
 
     if(HUNTER_ENABLED)
         target_link_libraries(${lib}
-            basis_universal::basisu_transcoder)
+            basis_universal::basisu_transcoder
+            OpenGL::Registry-Headers)
     endif()
 
     if( LIB_TYPE STREQUAL STATIC )
@@ -306,11 +312,18 @@ macro(commom_lib_settings lib write)
     if(WIN32)
         target_compile_definitions(
             ${lib}
-        PRIVATE
-            "KTX_API=__declspec(dllexport)"
+        # PRIVATE
+        #     "KTX_API=__declspec(dllexport)"
         PUBLIC # only for basisu_c_binding.
             BASISU_NO_ITERATOR_DEBUG_LEVEL
         )
+        if( LIB_TYPE STREQUAL SHARED )
+            target_compile_definitions(
+                ${lib}
+                PRIVATE
+                    "KTX_API=__declspec(dllexport)"
+            )
+        endif()
         target_sources(
             ${lib}
         PRIVATE

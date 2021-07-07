@@ -89,7 +89,7 @@ MODIFICATIONS for use in libktx
 
 #include <assert.h>
 #include "formatsize.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 
 #if defined(_WIN32)
 #define NOMINMAX

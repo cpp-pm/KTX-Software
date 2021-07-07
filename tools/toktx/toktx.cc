@@ -24,7 +24,7 @@
 
 #include "GL/glcorearb.h"
 #include "ktx.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 #include "argparser.h"
 #include "scapp.h"
 #include "version.h"

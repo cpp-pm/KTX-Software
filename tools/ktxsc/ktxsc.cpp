@@ -13,7 +13,7 @@
 #include <vector>
 #include <ktx.h>
 
-#include <KhronosGroup/khr_df.h>
+#include <KHR/khr_df.h>
 
 #include "argparser.h"
 #include "scapp.h"

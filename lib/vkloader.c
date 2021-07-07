@@ -33,7 +33,7 @@
 #include "texture1.h"
 #include "texture2.h"
 #include "vk_format.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 
 // Macro to check and display Vulkan return results.
 // Use when the only possible errors are caused by invalid usage by this loader.

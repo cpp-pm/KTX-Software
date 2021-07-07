@@ -9,7 +9,7 @@ target_include_directories(
     streamtests
 PRIVATE
     $<TARGET_PROPERTY:ktx,INCLUDE_DIRECTORIES>
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../other_include
+    # ${CMAKE_CURRENT_SOURCE_DIR}/../../other_include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib  # Just for gl_format.h
 )
 
@@ -22,7 +22,7 @@ set_target_properties(
 
 target_link_libraries(
     streamtests
-    gtest
+    GTest::gmock_main
     ktx
     ${CMAKE_THREAD_LIBS_INIT}
 )

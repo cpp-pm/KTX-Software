@@ -16,7 +16,7 @@ PRIVATE
 
 target_link_libraries(
     transcodetests
-    gtest
+    GTest::gmock_main
     ktx
     obj_basisu_cbind
     ${CMAKE_THREAD_LIBS_INIT}

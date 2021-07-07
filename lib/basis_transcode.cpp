@@ -20,13 +20,13 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-#include <KhronosGroup/khr_df.h>
+#include <KHR/khr_df.h>
 
-#include <KhronosGroup/dfd.h>
+#include <KHR/dfd.h>
 #include "ktx.h"
 #include "ktxint.h"
 #include "texture2.h"
-#include <KhronosGroup/vkformat_enum.h>
+#include <KHR/vkformat_enum.h>
 #include "basis_sgd.h"
 #include <basis_universal/transcoder/basisu_file_headers.h>
 #include <basis_universal/transcoder/basisu_transcoder.h>

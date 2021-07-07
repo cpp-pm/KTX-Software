@@ -20,13 +20,13 @@
 
 #include <ktx.h>
 
-#include <KhronosGroup/khr_df.h>
+#include <KHR/khr_df.h>
 
 #include "ktxapp.h"
 #include "ktxint.h"
 #include "vkformat_enum.h"
 #define LIBKTX // To stop dfdutils including vulkan_core.h.
-#include <KhronosGroup/dfd.h>
+#include <KHR/dfd.h>
 #include "texture.h"
 #include "basis_sgd.h"
 // Gotta love Windows :-)
