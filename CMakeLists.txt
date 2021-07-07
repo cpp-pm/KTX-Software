@@ -121,12 +121,10 @@ if(HUNTER_ENABLED)
         hunter_add_package(dfdutils)
         find_package(dfdutils CONFIG REQUIRED)
     endif()
-    if(KTX_FEATURE_GL_UPLOAD)
-        find_package(OpenGL REQUIRED)
+    if(KTX_FEATURE_TESTS)
+        hunter_add_package(GTest)
+        find_package(GTest CONFIG REQUIRED)
     endif()
-
-    hunter_add_package(GTest)
-    find_package(GTest CONFIG REQUIRED)
 endif()
 
 # Global compile & link options including optimization flags
@@ -266,7 +264,7 @@ macro(commom_lib_settings lib write)
         ${lib}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include/${lib}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/KHR>
     # PRIVATE
         # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/basisu/transcoder>
         # $<INSTALL_INTERFACE:lib/basisu/transcoder>
@@ -708,7 +706,7 @@ if(APPLE OR LINUX)
             COMPONENT library
             NAMELINK_SKIP
         PUBLIC_HEADER
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/KHR
             COMPONENT dev
     )
     install(TARGETS ktx
@@ -732,7 +730,7 @@ else()
             DESTINATION ${CMAKE_INSTALL_BINDIR}
             COMPONENT library
         PUBLIC_HEADER
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/KHR
             COMPONENT dev
     )
 endif()
