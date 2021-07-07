@@ -281,8 +281,9 @@ macro(commom_lib_settings lib write)
 
     if(HUNTER_ENABLED)
         target_link_libraries(${lib}
-            basis_universal::basisu_transcoder
-            OpenGL::Registry-Headers)
+            PUBLIC
+                basis_universal::basisu_transcoder
+                OpenGL::Registry-Headers)
     endif()
 
     if( LIB_TYPE STREQUAL STATIC )
@@ -398,8 +399,9 @@ macro(commom_lib_settings lib write)
         #     $<INSTALL_INTERFACE:lib/dfdutils>
         # )
         target_link_libraries(${lib}
-            KhronosGroup::dfdutils
-            $<${write}:basis_universal::basisu_encoder>
+            PUBLIC
+                KhronosGroup::dfdutils
+                $<${write}:basis_universal::basisu_encoder>
         )
 
 

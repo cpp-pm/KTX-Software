@@ -37,8 +37,8 @@ PRIVATE
 )
 
 if(HUNTER_ENABLED)
-    hunter_add_package(lodepng)
-    find_package(lodepng CONFIG REQUIRED)
+    hunter_add_package(LodePNG)
+    find_package(LodePNG CONFIG REQUIRED)
     target_link_libraries(toktx LodePNG::lodepng)
 endif()
 

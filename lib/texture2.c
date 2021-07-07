@@ -35,7 +35,7 @@
 #include "unused.h"
 #include <KHR/vkformat_enum.h>
 
-#include <cassert>
+#include <assert.h>
 
 // FIXME: Test this #define and put it in a header somewhere.
 //#define IS_BIG_ENDIAN (1 == *(unsigned char *)&(const int){0x01000000ul})
