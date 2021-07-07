@@ -696,11 +696,31 @@ endif()
 
 # Install
 
+set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(VERSION_CONFIG "${GENERATED_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(PROJECT_CONFIG "${GENERATED_DIR}/${PROJECT_NAME}Config.cmake")
+
+set(CONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+
+set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
+set(NAMESPACE "${PROJECT_NAME}::")
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${VERSION_CONFIG}" COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    "cmake/Config.cmake.in"
+    "${PROJECT_CONFIG}"
+    INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
+)
+
 if(APPLE OR LINUX)
     # Have library's name links as separate component
     set(KTX_NAMELINKS ON)
     install(TARGETS ktx
-        EXPORT KTXTargets
+        EXPORT ${TARGETS_EXPORT_NAME}
         LIBRARY
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
             COMPONENT library
@@ -719,7 +739,7 @@ else()
     # No name links on Windows
     set(KTX_NAMELINKS OFF)
     install(TARGETS ktx
-        EXPORT KTXTargets
+        EXPORT ${TARGETS_EXPORT_NAME}
         ARCHIVE
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
             COMPONENT dev
@@ -735,26 +755,36 @@ else()
     )
 endif()
 
-install(EXPORT KTXTargets
-    FILE KtxTargets.cmake
-    NAMESPACE KTX::
-    DESTINATION lib/cmake/ktx
-    COMPONENT library
+# install(EXPORT KTXTargets
+#     FILE KtxTargets.cmake
+#     NAMESPACE KTX::
+#     DESTINATION lib/cmake/ktx
+#     COMPONENT library
+# )
+
+# include(CMakePackageConfigHelpers)
+# write_basic_package_version_file(
+#     "KtxConfigVersion.cmake"
+#     COMPATIBILITY SameMajorVersion
+# )
+
+# install( FILES
+#     "cmake/KtxConfig.cmake"
+#     "${CMAKE_CURRENT_BINARY_DIR}/KtxConfigVersion.cmake"
+#     DESTINATION lib/cmake/ktx
+#     COMPONENT library
+# )
+
+install(
+    FILES "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
+    DESTINATION "${CONFIG_INSTALL_DIR}"
 )
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "KtxConfigVersion.cmake"
-    COMPATIBILITY SameMajorVersion
+install(
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    NAMESPACE "${NAMESPACE}"
+    DESTINATION "${CONFIG_INSTALL_DIR}"
 )
-
-install( FILES
-    "cmake/KtxConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/KtxConfigVersion.cmake"
-    DESTINATION lib/cmake/ktx
-    COMPONENT library
-)
-
 
 # CPack
 
